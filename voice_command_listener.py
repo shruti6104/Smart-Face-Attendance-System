@@ -1,0 +1,47 @@
+import speech_recognition as sr
+import os
+import pyttsx3
+
+engine = pyttsx3.init()
+recognizer = sr.Recognizer()
+
+def speak(text):
+    print(f"🗣️ {text}")
+    engine.say(text)
+    engine.runAndWait()
+
+def listen_command():
+    with sr.Microphone() as source:
+        print("🎧 Listening...")
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
+
+    try:
+        command = recognizer.recognize_google(audio).lower()
+        print(f"🔎 You said: {command}")
+        return command
+    except:
+        speak("Sorry, I didn't catch that.")
+        return ""
+
+# Start interaction
+speak("Voice command system activated. Please say a command.")
+
+while True:
+    command = listen_command()
+
+    if "register face" in command:
+        speak("Opening face registration module")
+        os.system("python capture_faces.py")
+
+    elif "train model" in command:
+        speak("Training the face recognition model")
+        os.system("python train_model.py")
+
+    elif "start attendance" in command:
+        speak("Launching attendance system")
+        os.system("python recognize_faces_gui.py")
+
+    elif "exit" in command or "stop" in command:
+        speak("Exiting the system. Goodbye.")
+        break

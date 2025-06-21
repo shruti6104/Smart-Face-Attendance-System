@@ -1,0 +1,6 @@
+__pycache__/
+trainer.yml
+daily_reports/
+uploads/
+*.csv
+
