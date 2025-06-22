@@ -85,8 +85,8 @@ python main_attendance_app.py
 Copy
 Edit
 1,Shrutika
-2,Aryan
-3,Kunal
+2,Sharvari
+3,Tanishqua
 ✅ Output Sample (attendance.csv)
 pgsql
 Copy
