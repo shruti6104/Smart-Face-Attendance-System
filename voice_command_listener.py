@@ -36,11 +36,11 @@ while True:
 
     elif "train model" in command:
         speak("Training the face recognition model")
-        os.system("python train_model.py")
+        os.system("python face_train.py")
 
     elif "start attendance" in command:
         speak("Launching attendance system")
-        os.system("python recognize_faces_gui.py")
+        os.system("python recognise_face_gui.py")
 
     elif "exit" in command or "stop" in command:
         speak("Exiting the system. Goodbye.")
