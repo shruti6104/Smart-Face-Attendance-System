@@ -1,66 +1,80 @@
+
 import cv2
 import os
 import pyttsx3
 from datetime import datetime
 
-# Initialize TTS engine
+# === Initialize text-to-speech engine ===
 engine = pyttsx3.init()
 
-# Paths
-path = "uploads"
-cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-trainer_path = "trainer.yml"
-names_file = "names.txt"
-attendance_file = "attendance.csv"
+# === Paths ===
+UPLOAD_DIR = "uploads"
+CASCADE_PATH = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+TRAINER_PATH = "trainer.yml"
+NAMES_FILE = "names.txt"
+ATTENDANCE_FILE = "attendance.csv"
 
-# Ensure uploads folder exists
-if not os.path.exists(path):
-    os.makedirs(path)
-    print(f"[INFO] Created missing folder: {path}")
+# === Ensure uploads folder exists ===
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+    print(f"[INFO] Created missing folder: {UPLOAD_DIR}")
 
-# Load face recognizer and cascade
-recognizer = cv2.face.LBPHFaceRecognizer_create()
-recognizer.read(trainer_path)
-face_cascade = cv2.CascadeClassifier(cascade_path)
-
-# Load names from file
-names = {}
-if os.path.exists(names_file):
-    with open(names_file, "r") as f:
-        for line in f:
-            id, name = line.strip().split(",")
-            names[int(id)] = name
-else:
-    print("[ERROR] names.txt file not found.")
+# === Load recognizer and cascade ===
+if not os.path.exists(TRAINER_PATH):
+    print("[❌ ERROR] trainer.yml not found. Please train the model first.")
     exit()
 
-# Function to mark attendance
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.read(TRAINER_PATH)
+face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
+
+# === Load names from names.txt ===
+names = {}
+if os.path.exists(NAMES_FILE):
+    with open(NAMES_FILE, "r") as f:
+        for line in f:
+            line = line.strip()
+            if "," in line:
+                try:
+                    id_str, name = line.split(",", 1)
+                    names[int(id_str)] = name
+                except ValueError:
+                    continue
+else:
+    print("[❌ ERROR] names.txt file not found.")
+    exit()
+
+# === Function to mark attendance ===
 def mark_attendance(name):
-    if not os.path.exists(attendance_file):
-        with open(attendance_file, "w") as f:
+    if not os.path.exists(ATTENDANCE_FILE):
+        with open(ATTENDANCE_FILE, "w") as f:
             f.write("Name,Time\n")
 
-    with open(attendance_file, "r+") as f:
+    with open(ATTENDANCE_FILE, "r+") as f:
         lines = f.readlines()
-        logged_names = [line.split(",")[0] for line in lines]
+        logged_names = [line.split(",")[0] for line in lines if "," in line]
         if name not in logged_names:
             time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             f.write(f"{name},{time_now}\n")
             engine.say(f"Welcome {name}")
             engine.runAndWait()
-            print(f"[INFO] Attendance marked for: {name}")
+            print(f"[✅ INFO] Attendance marked for: {name}")
 
-# Process each image in uploads/
-images = [img for img in os.listdir(path) if img.lower().endswith(('.jpg', '.jpeg', '.png'))]
+# === Process all images in uploads/ ===
+images = [img for img in os.listdir(UPLOAD_DIR) if img.lower().endswith(('.jpg', '.jpeg', '.png'))]
 
 if not images:
-    print(f"[WARNING] No image files found in {path}/")
+    print(f"[⚠️ WARNING] No image files found in {UPLOAD_DIR}/")
 else:
     for image_name in images:
-        image_path = os.path.join(path, image_name)
+        image_path = os.path.join(UPLOAD_DIR, image_name)
         image = cv2.imread(image_path)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+        if image is None:
+            print(f"[⚠️ WARNING] Could not read image: {image_name}")
+            continue
+
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
 
         for (x, y, w, h) in faces:
