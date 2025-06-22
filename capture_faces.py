@@ -59,3 +59,4 @@ cv2.destroyAllWindows()
 engine.say(f"Face data collection completed for {name}")
 engine.runAndWait()
 print(f"[✅ DONE] Collected {count} images for {name} (ID: {id})")
+
