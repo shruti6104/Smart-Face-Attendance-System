@@ -62,28 +62,18 @@ git clone https://github.com/shruti6104/Smart-Face-Attendance-System.git
 cd Smart-Face-Attendance-System
 
 2️⃣ Install Dependencies
-bash
-Copy
-Edit
+baash
 pip install -r requirements.txt
 3️⃣ Register Your Face
 bash
-Copy
-Edit
 python capture_faces.py
 4️⃣ Train the Model
 bash
-Copy
-Edit
 python train_model.py
 5️⃣ Start the System (Webcam + Photo Support)
 bash
-Copy
-Edit
 python main_attendance_app.py
 ✍️ Sample: names.txt
-Copy
-Edit
 1,Shrutika
 2,Sharvari
 3,Tanishqua
@@ -95,8 +85,6 @@ Name,Time
 Shrutika,2025-06-21 20:45:12
 🔊 Use Voice Commands
 bash
-Copy
-Edit
 python voice_command_listener.py
 You can say:
 
@@ -110,10 +98,6 @@ exit
 
 📸 Optional: Image Test
 Run:
-
-bash
-Copy
-Edit
 python recognize_image.py
 Then enter a photo name like test.jpg.
 
