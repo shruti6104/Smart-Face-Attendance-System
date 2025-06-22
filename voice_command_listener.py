@@ -32,15 +32,15 @@ while True:
 
     if "register face" in command:
         speak("Opening face registration module")
-        os.system("python capture_faces.py")
+        os.system("python shrutika_AI_attndence/capture_faces.py")
 
     elif "train model" in command:
         speak("Training the face recognition model")
-        os.system("python face_train.py")
+        os.system("python shrutika_AI_attndence/face_train.py")
 
     elif "start attendance" in command:
         speak("Launching attendance system")
-        os.system("python recognise_face_gui.py")
+        os.system("python shrutika_AI_attndence/face_recognize.py")
 
     elif "exit" in command or "stop" in command:
         speak("Exiting the system. Goodbye.")
