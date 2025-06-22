@@ -32,10 +32,11 @@ def mark_attendance(name):
         if name not in logged:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             f.write(f"{name},{now}\n")
+            print(f"[✅] Marked attendance for {name} at {now}")
             engine.say(f"Welcome {name}")
             engine.runAndWait()
 
-# Recognition logic (photo or webcam)
+# Recognition logic
 def recognize_faces(frame, gray):
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     for (x, y, w, h) in faces:
@@ -49,21 +50,24 @@ def recognize_faces(frame, gray):
             label = "Unknown"
             color = (0, 0, 255)
 
-        cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
     return frame
 
 # === Choose Mode ===
-print("\nChoose Mode:")
+print("\n📌 Choose Mode:")
 print("1. Live Webcam Recognition")
 print("2. Photo Upload Recognition")
 choice = input("Enter 1 or 2: ")
 
 # === MODE 1: WEBCAM ===
 if choice == "1":
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # safer on Windows
     while True:
         ret, frame = cap.read()
+        if not ret:
+            print("❌ Failed to access webcam")
+            break
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         processed = recognize_faces(frame, gray)
 
@@ -73,12 +77,19 @@ if choice == "1":
     cap.release()
     cv2.destroyAllWindows()
 
-# === MODE 2: PHOTO ===
+# === MODE 2: PHOTO UPLOAD ===
 elif choice == "2":
-    img_path = input("Enter image file name (e.g., test.jpg): ")
+    print("\n📁 Available images in 'uploads/' folder:")
+    for img in os.listdir("uploads"):
+        print(" -", img)
+    
+    img_name = input("Enter image file name from above (e.g., photo.jpg): ")
+    img_path = os.path.join("uploads", img_name)
+
     if not os.path.exists(img_path):
-        print("[❌] File not found.")
+        print(f"[❌] File not found in uploads/: {img_name}")
         exit()
+
     img = cv2.imread(img_path)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     processed = recognize_faces(img, gray)
@@ -88,4 +99,4 @@ elif choice == "2":
     cv2.destroyAllWindows()
 
 else:
-    print("❌ Invalid input.")
+    print("❌ Invalid input. Please enter 1 or 2.")
